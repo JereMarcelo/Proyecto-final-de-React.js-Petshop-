@@ -1,0 +1,5 @@
+.ListGroup {
+    display: flex;
+    justify-content: center;
+    background-color: rgb(169, 18, 18);
+}
