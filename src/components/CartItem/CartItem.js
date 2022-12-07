@@ -1,10 +1,11 @@
 import './CartItem.css'
 import { useContext } from 'react'
-import { CartContext } from '../../context/CartContext'
+import { CartContext, useCart } from '../../context/CartContext'
+import Swal from 'sweetalert2'
 
-
-const CartItem = ({ id, name, quantity, price }) => {
+const CartItem = ({ id, name, quantity, price, product }) => {
     const { removeItem } = useContext(CartContext)
+    const {removeProduct} = useCart ();
 
     const handleRemove = (id) => {
         removeItem(id)
@@ -33,6 +34,7 @@ const CartItem = ({ id, name, quantity, price }) => {
                  <button className='ButtonCartItem' onClick={() => handleRemove(id)}>X</button>
             </footer>
         </article>
+        
     )
 }
 

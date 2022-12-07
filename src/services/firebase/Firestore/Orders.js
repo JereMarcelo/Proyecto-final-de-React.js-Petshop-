@@ -1,6 +1,6 @@
-import { CartContext } from "../../CartContext"
-import { collection, getDocs, query, where, documentId, writeBatch, addDoc, Timestamp } from 'firebase/Firestore'
-import { dataBase } from '../../services/firebase/index'
+import { CartContext } from "../../../CartContext/CartContext"
+import { collection, getDocs, query, where, documentId, writeBatch, addDoc, Timestamp } from 'firebase/firestore'
+import { db } from '../firebase/index'
 import { useContext } from "react"
 
 export const useOrdersFromFirestore = () => {
@@ -16,13 +16,13 @@ const createOrder = async (datosCompra) => {
             total: total,
             date: Timestamp.fromDate(new Date())
         }
-        const batch = writeBatch(dataBase)
+        const batch = writeBatch(db)
 
         const outOfStock = []
 
         const ids = cart.map(prod => prod.id)
 
-        const productsRef = collection(dataBase, 'products')
+        const productsRef = collection(db, 'products')
 
         const productsAddedFromFirestore = await getDocs(query(productsRef, where(documentId(), 'in', ids)))
 
@@ -44,7 +44,7 @@ const createOrder = async (datosCompra) => {
 
         if(outOfStock.length === 0) {
             
-            const orderRef = collection(dataBase, 'orders')
+            const orderRef = collection(db, 'orders')
             
             const orderAdded = await addDoc(orderRef, objOrder)
             

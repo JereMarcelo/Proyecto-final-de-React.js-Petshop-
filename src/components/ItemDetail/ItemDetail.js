@@ -48,9 +48,7 @@ const ItemDetail = ({ id, name, img, category, description, price, stock }) => {
             <footer className='ItemFooter'>
                 { stock !== 0 ? <ItemCount onAdd={handleOnAdd} stock={stock} initial={quantityAdded} />: <p>No hay stock</p>}
                 {
-                    //!isInCart(id)
-                    //?<ItemCount onAdd={handleOnAdd} stock={stock}/>
-                    //:<Link to='/cart' className='Option'>Finalizar compra</Link>
+                   
                     isInCart(id) && <Link to='/cart' className='Option' style={{backgroundColor: 'blue'}}>Finalizar compra</Link>
                 }
             </footer>

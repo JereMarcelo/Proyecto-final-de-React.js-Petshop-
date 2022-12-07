@@ -75,7 +75,7 @@ const submit = (e) => {
 
 
             <div >
-            <button  className="botonSubmit" onClick = {submit}> Submit Data</button>
+            <button  className="botonSubmit" onClick = {submit}> Confirmar datos </button>
             </div>
             
             </div>

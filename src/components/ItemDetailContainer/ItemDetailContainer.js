@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import ItemDetail from '../ItemDetail/ItemDetail'
 import { useParams, useNavigate } from 'react-router-dom'
 import { getDoc, doc } from 'firebase/firestore'
-import { db } from '../../services/firebase'
+import { db } from '../../services/firebase/firebase/index'
 
 const ItemDetailContainer = ({ setCart }) => {
     const [product, setProduct] = useState()
@@ -41,8 +41,8 @@ const ItemDetailContainer = ({ setCart }) => {
 
     return(
         <div className='ItemDetailContainer' >
-            <button className='Option' onClick={() => navigate(-1)}>Back</button>
             <ItemDetail  {...product} />
+            <button className='Option' onClick={() => navigate(-1)}>Back</button>
         </div>
     )
 }

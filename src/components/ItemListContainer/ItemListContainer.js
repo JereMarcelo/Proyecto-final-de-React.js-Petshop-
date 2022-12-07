@@ -2,16 +2,12 @@ import './ItemListContainer.css'
 import { useState, useEffect } from 'react'
 import ItemList from '../ItemList/ItemList'
 import { useParams } from 'react-router-dom'
-
-import { getProducts } from '../../services/firebase/Firestore/products'
+import { getProducts } from '../../services/firebase/firestore/Products'
 import { useAsync } from '../../hooks/useAsync'
 
 
 const ItemListContainer = ({ greeting  }) => {
-    
     const { categoryId } = useParams()
-
-   
 
     const getProductsWithCategory = () => getProducts(categoryId)
 
@@ -33,5 +29,6 @@ const ItemListContainer = ({ greeting  }) => {
         </div>
     )
 }
+
 
 export default ItemListContainer

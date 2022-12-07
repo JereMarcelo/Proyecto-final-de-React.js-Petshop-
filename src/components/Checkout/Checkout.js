@@ -1,94 +1,83 @@
 import { useState, useContext } from "react"
 import { CartContext } from "../../context/CartContext"
+// import { addDoc, collection } from 'firebase/firestore'
 import { NotificationContext} from '../../notification/NotificationService'
 import { collection, getDocs, query, where, documentId, writeBatch, addDoc } from 'firebase/firestore'
-import { db } from '../../services/firebase/index'
-
+import { db } from '../../services/firebase/firebase/index'
 import { useNavigate } from "react-router-dom"
+//import { useOrdersFromFirestore } from "../../Service/Firestore/Orders"
+import'../Checkout/Checkout.css'
+
+
+import ClientForm from "../Form/Form"
+import Swal from "sweetalert2"
+import { useOrdersFromFirestore } from "../../services/firebase/firestore/Orders"
+
 
 const Checkout = () => {
+    const {clearCart} = useContext(CartContext)
+
     const [loading, setLoading] = useState(false)
 
-    const { cart, total, clearCart } = useContext(CartContext)
-    const { setNotification } = useContext(NotificationContext)
+    const [personalData, setPersonalData] = useState(false)
+    
+    const [datosCompra, setDatosCompra] = useState({}) 
+
+    const completoDatos = (name, surname, address, phone, email) =>{
+            setDatosCompra({name, surname, address, phone, email})
+            setPersonalData(true)
+        }    
 
     const navigate = useNavigate()
 
-    const createOrder = async () => {
+    const { createOrder } = useOrdersFromFirestore()
+
+    const getOrder =()=>{    
+        
         setLoading(true)
 
-        try {
-            const objOrder = {
-                buyer: {
-                    name: 'Jeremias Abello',
-                    phone: '753159825',
-                    mail: 'abellojeremias@gmail.com'
-                },
-                items: cart,
-                total: total
-            }
-            
-            const batch = writeBatch(db)
-
-            const outOfStock = []
-
-            const ids = cart.map(prod => prod.id)
-    
-            const productsRef = collection(db, 'products')
-    
-            const productsAddedFromFirestore = await getDocs(query(productsRef, where(documentId(), 'in', ids)))
-
-            const { docs } = productsAddedFromFirestore
-
-            docs.forEach(doc => {
-                const dataDoc = doc.data()
-                const stockDb = dataDoc.stock
-
-                const productAddedToCart = cart.find(prod => prod.id === doc.id)
-                const prodQuantity = productAddedToCart?.quantity
-
-                if(stockDb >= prodQuantity) {
-                    batch.update(doc.ref, { stock: stockDb - prodQuantity })
-                } else {
-                    outOfStock.push({ id: doc.id, ...dataDoc})
-                }
-            })
-
-            if(outOfStock.length === 0) {
-                await batch.commit()
-
-                const orderRef = collection(db, 'orders')
-
-                const orderAdded = await addDoc(orderRef, objOrder)
-
-                clearCart()
-
-                setTimeout(() => {
-                    navigate('/')
-                }, 3000)
-
-                setNotification('success', `Se genero su orden de compra`)
-            } else {
-               setNotification('error','hay productos que estan fuera de stock')
-            }
-
-        } catch (error) {
-            console.log(error)
-        } finally {
-            setLoading(false)
-        }
         
+
+        createOrder(datosCompra).then(response => {
+            if(response.result === 'orderCreated') {
+                clearCart()
+                Swal.fire({
+                    title: "Gracias por su compra",
+                    text:`El id de su orden es: ${response.id}`,
+                    icon: "success",
+                    buttons: true,
+                    dangerMode: true,
+                })
+        
+                navigate ('/')
+            }
+        }).catch(error => {
+            Swal.fire({
+                title:"Ha habido un error",
+                icon: false,
+                buttons: true,
+                dangerMode: true,
+            })
+        }).finally(() => {
+            setLoading(false)
+        })
     }
 
     if(loading) {
-        return <h1>Se esta generando su orden de compra..</h1>
+        return <div className="conteinerCheckout">
+            <h1>Se esta procesando su pedido...</h1>
+            <br></br>
+            <div className="chaotic-orbit"> </div>
+        </div>
     }
 
-    return (
+    return (    
         <div>
-            <h1>Confirmacion de compra </h1>
-            
-            <button onClick={createOrder}>Generar orden de compra</button>
+            <h1 className="datosCliente">Completa los datos para generar la orden.</h1>
+            <ClientForm completoDatos={completoDatos}/>
+            { personalData 
+            ?<button className="botonCheckout" onClick={getOrder}>Generar Pedido</button> 
+            : ""}
         </div>
     )
 }

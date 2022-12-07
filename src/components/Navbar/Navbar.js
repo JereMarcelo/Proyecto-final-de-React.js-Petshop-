@@ -3,7 +3,7 @@ import CartWidget from '../CartWidget/CartWidget'
 import './Navbar.css'
 import { NavLink } from 'react-router-dom'
 import { getDocs, collection } from 'firebase/firestore'
-import { db } from '../../services/firebase'
+import { db } from '../../services/firebase/firebase/index'
 
 const NavBar = () => {
   const [categories, setCategories] = useState([])
